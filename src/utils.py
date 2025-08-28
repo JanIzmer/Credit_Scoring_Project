@@ -22,3 +22,10 @@ def prepare_dataset(df: pd.DataFrame) -> pd.DataFrame:
     
     df = add_credit_features(df)
     return df
+# Not train decorator to exclude target variable
+def not_train(func):
+    def wrapper(df, *args, **kwargs):
+        if 'SeriousDlqin2yrs' in df.columns:
+            df = df.drop(columns=['SeriousDlqin2yrs'])
+        return func(df, *args, **kwargs)
+    return wrapper

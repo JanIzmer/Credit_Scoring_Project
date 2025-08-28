@@ -14,9 +14,6 @@ def clean_credit_data(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
     
-    # --- Target variable ---
-    if 'SeriousDlqin2yrs' in df.columns:
-        df['SeriousDlqin2yrs'] = df['SeriousDlqin2yrs'].astype(int)
     
     df = df[df['age'] >= 18]
     

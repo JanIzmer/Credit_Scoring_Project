@@ -1,15 +1,15 @@
-# 🏦 Credit Scoring Project
+# Credit Scoring Project
 
-## 📌 Project Overview
+## Project Overview
 This project aims to build a predictive model to estimate the probability of a client defaulting on a loan.  
-- **Goal:** Predict binary outcome (`0` — repaid, `1` — default).  
-- **Business Value:** Helps the bank reduce credit risk and make informed lending decisions.
+- **Goal:** The Goal is to create ML model which can predict the probabilyty of a client defaulting binary outcome (`0` — repaid, `1` — default).  
+- **Business Value:** Helps the bank reduce credit risk and make informed lending decisions. *In this project only for educational purpose*.
 
-## 📂 Dataset
-The dataset contains information about clients and their loan history.  
+## Dataset
+The dataset was obtained from the open-source platform Kaggle. It contains information about clients and their loan histories.
 
 **Features include:**
-- `SeriousDlqin2yrs` — target variable (1 if defaulted within 2 years)
+- `SeriousDlqin2yrs` — target variable (1 if defaulted within 2 years, 0 if repaid)
 - `RevolvingUtilizationOfUnsecuredLines` — ratio of credit line utilization
 - `age` — age of the client
 - `NumberOfTime30-59DaysPastDueNotWorse` — times 30-59 days past due
@@ -21,10 +21,10 @@ The dataset contains information about clients and their loan history.
 - `NumberOfTime60-89DaysPastDueNotWorse` — times 60-89 days past due
 - `NumberOfDependents` — number of dependents
 
-## 🛠️ Project Steps
+## Project Steps
 
 ### 1. Project Layout Creation
-- Defined the project structure and workflow for credit default prediction.
+- Defined the project structure and workflow
 
 ### 2. Task Breakdown
 - Split the project into sequential tasks from data preprocessing to model evaluation and reporting.
@@ -55,17 +55,17 @@ The dataset contains information about clients and their loan history.
 - Evaluated model performance using ROC-AUC, F1-score, Precision, and Recall.
 - Analyzed feature importance and SHAP values for interpretability.
 
-## 📊 Results
+## Results
 - Best model: `LightGBM` with ROC-AUC = 0.86,
 - Key risk factors:
     - Late payment ratio
     - Credit per age
     - Age
 
-## 🚀 Demo
+## Demo
 A prototype PowerBi dashboard reports/report.pbix
 
-## 📦 Repository Structure
+## Repository Structure
 ```
 .
 ├── data/              # Datasets
@@ -75,11 +75,11 @@ A prototype PowerBi dashboard reports/report.pbix
 └── README.md          # Project description
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 - Python (pandas, numpy, scikit-learn, lightgbm, smoteen, optuna),
 - Jupyter Notebook,
 - Matplotlib / Seaborn ,
 - Power BI (for visualization).
 
-## ✍️ Author
+## Author
 This project was created for educational purposes to demonstrate Data Analytics / Data Science skills in the financial sector.

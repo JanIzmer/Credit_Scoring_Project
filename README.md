@@ -46,14 +46,13 @@ The dataset was obtained from the open-source platform Kaggle. It contains infor
 
 ### 6. Model Training
 - Trained a LightGBM model on engineered features.
-- Handled class imbalance using SMOTE.
 - Performed train-test split.
 - Optimized hyperparameters using Optuna.
 - Selected the best probability threshold for classification.
 
 ### 7. Model Testing and Evaluation
 - Evaluated model performance using ROC-AUC, F1-score, Precision, and Recall.
-- Analyzed feature importance and SHAP values for interpretability.
+- Analyzed feature importance for interpretability.
 
 ## Results
 - Best model: `LightGBM` with ROC-AUC = 0.86,
@@ -65,18 +64,8 @@ The dataset was obtained from the open-source platform Kaggle. It contains infor
 ## Demo
 A prototype PowerBi dashboard reports/report.pbix
 
-## Repository Structure
-```
-.
-├── data/              # Datasets
-├── notebooks/         # Jupyter Notebooks (EDA, models)
-├── src/               # ML pipeline, functions
-├── reports/           # Reports and presentations
-└── README.md          # Project description
-```
-
 ## Tech Stack
-- Python (pandas, numpy, scikit-learn, lightgbm, smoteen, optuna),
+- Python (pandas, numpy, scikit-learn, lightgbm, optuna),
 - Jupyter Notebook,
 - Matplotlib / Seaborn ,
 - Power BI (for visualization).

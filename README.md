@@ -17,22 +17,27 @@ threshold selection, and an interactive Power BI dashboard for business users.
 
 ## Results
 
-| Metric | Value |
-|---|---|
-| **ROC-AUC** (20% stratified hold-out) | **0.867** |
-| Precision / Recall / F1 — default class (at threshold 0.40) | 0.57 / 0.31 / 0.40 |
-| Accuracy | 0.94 |
+All metrics are computed on a **20% hold-out test set** that was never used for
+preprocessing, hyperparameter tuning or threshold selection.
 
-The classification threshold (0.40 instead of the default 0.50) was selected
-jointly with the hyperparameters by maximizing the F-beta score, trading some
-precision for better recall on the rare default class (~6.7% of borrowers).
+| Model | Test ROC-AUC | Gini |
+|---|---|---|
+| Logistic Regression (baseline) | 0.864 | 0.727 |
+| **LightGBM** (Optuna, 3-fold CV) | **0.868** | **0.736** |
+
+At the operating threshold (0.585, selected on out-of-fold train predictions by
+maximizing the F2-score) the model catches **71% of future defaulters** at 26%
+precision — a deliberately recall-oriented trade-off, since missing a defaulter
+is assumed to cost the bank more than reviewing a good client. The default rate
+in the portfolio is ~6.7%.
 
 | ROC curve | Feature importance |
 |---|---|
 | ![ROC curve](reports/figures/roc_curve.png) | ![Feature importance](reports/figures/feature_importance.png) |
 
-**Key drivers of default risk:** debt ratio, age, monthly income, and the
-engineered features `credit_per_age` and `debt_to_income`.
+**Key drivers of default risk** (by total gain): revolving credit utilization,
+history of 90+ days delinquency, and the engineered `credit_per_age` — fully
+consistent with the mutual-information ranking from the EDA.
 
 ## Project Workflow
 
@@ -43,10 +48,13 @@ engineered features `credit_per_age` and `debt_to_income`.
 - Ranked features with a correlation heatmap and mutual information against the target.
 
 ### 2. Modeling — [`02_Modeling.ipynb`](notebooks/02_Modeling.ipynb)
-- **Preprocessing:** missing-value imputation, outlier clipping at the 95th percentile, dropped a near-zero-signal feature (`NumberRealEstateLoansOrLines`).
-- **Feature engineering:** `credit_per_age`, `late_payment_ratio`, `debt_to_income`.
-- **Model:** LightGBM classifier; 50-trial [Optuna](https://optuna.org/) study tuning `n_estimators`, `max_depth`, `learning_rate`, `colsample_bytree`, `reg_alpha`, and the classification threshold.
-- **Evaluation:** ROC-AUC on a stratified hold-out set, classification report, confusion matrix, and predicted-probability distributions per class.
+- **Leakage-free preprocessing:** the train/test split happens *before* any preprocessing; outlier-clipping bounds (95th percentile) and the income median are fitted on the training set only.
+- **Missing values:** `MonthlyIncome` → train median + a binary `IncomeMissing` flag (0 would conflate "not reported" with real zero incomes); `NumberOfDependents` → 0.
+- **Feature engineering:** `credit_per_age`, `late_payment_ratio`, `debt_to_income`; dropped a near-zero-signal feature (`NumberRealEstateLoansOrLines`).
+- **Model:** LightGBM classifier; 50-trial [Optuna](https://optuna.org/) study maximizing mean ROC-AUC over a 3-fold stratified cross-validation on the training set.
+- **Baseline:** logistic regression (industry-standard scorecard family) for an honest comparison.
+- **Threshold selection:** on out-of-fold train predictions by maximizing F2 (recall-weighted).
+- **Evaluation:** ROC-AUC / Gini, classification report and confusion matrix on the untouched hold-out set; feature importance by total gain.
 - Generated predictions for the Kaggle test set.
 
 ### 3. Reporting — [`03_PowerBI_prepare.ipynb`](notebooks/03_PowerBI_prepare.ipynb) + [`Report.pbix`](reports/Report.pbix)

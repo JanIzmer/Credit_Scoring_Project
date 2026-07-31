@@ -20,20 +20,32 @@ threshold selection, and an interactive Power BI dashboard for business users.
 All metrics are computed on a **20% hold-out test set** that was never used for
 preprocessing, hyperparameter tuning or threshold selection.
 
-| Model | Test ROC-AUC | Gini |
-|---|---|---|
-| Logistic Regression (baseline) | 0.864 | 0.727 |
-| **LightGBM** (Optuna, 3-fold CV) | **0.868** | **0.736** |
+| Model | Test ROC-AUC | Gini | Test PR-AUC | KS |
+|---|---|---|---|---|
+| Random baseline | 0.500 | 0.000 | 0.067 | 0.000 |
+| Logistic Regression (baseline) | 0.864 | 0.727 | 0.385 | 0.563 |
+| **LightGBM** (Optuna, 3-fold CV) | **0.868** | **0.736** | **0.392** | **0.577** |
+
+With a 6.7% default rate, ROC-AUC alone flatters the model — its false positive
+rate is normalized by the 93% majority class. PR-AUC is normalized by the rare
+class instead: 0.392 against a random baseline of 0.067 is a **5.9x lift**. The
+KS statistic (0.577) is the separation measure conventionally reported in credit
+scoring.
 
 At the operating threshold (0.585, selected on out-of-fold train predictions by
 maximizing the F2-score) the model catches **71% of future defaulters** at 26%
 precision — a deliberately recall-oriented trade-off, since missing a defaulter
-is assumed to cost the bank more than reviewing a good client. The default rate
-in the portfolio is ~6.7%.
+is assumed to cost the bank more than reviewing a good client. That 26% is ~4x
+the 6.7% base rate: one in four flagged clients defaults, versus one in fifteen
+if reviewers picked at random.
 
-| ROC curve | Feature importance |
+| ROC curve | Precision-Recall curve |
 |---|---|
-| ![ROC curve](reports/figures/roc_curve.png) | ![Feature importance](reports/figures/feature_importance.png) |
+| ![ROC curve](reports/figures/roc_curve.png) | ![PR curve](reports/figures/pr_curve.png) |
+
+| Feature importance |
+|---|
+| ![Feature importance](reports/figures/feature_importance.png) |
 
 **Key drivers of default risk** (by total gain): revolving credit utilization,
 history of 90+ days delinquency, and the engineered `credit_per_age` — fully
@@ -54,7 +66,7 @@ consistent with the mutual-information ranking from the EDA.
 - **Model:** LightGBM classifier; 50-trial [Optuna](https://optuna.org/) study maximizing mean ROC-AUC over a 3-fold stratified cross-validation on the training set.
 - **Baseline:** logistic regression (industry-standard scorecard family) for an honest comparison.
 - **Threshold selection:** on out-of-fold train predictions by maximizing F2 (recall-weighted).
-- **Evaluation:** ROC-AUC / Gini, classification report and confusion matrix on the untouched hold-out set; feature importance by total gain.
+- **Evaluation:** ROC-AUC / Gini, PR-AUC and KS (imbalance-aware), classification report and confusion matrix on the untouched hold-out set; feature importance by total gain.
 - Generated predictions for the Kaggle test set.
 
 ### 3. Reporting — [`03_PowerBI_prepare.ipynb`](notebooks/03_PowerBI_prepare.ipynb) + [`Report.pbix`](reports/Report.pbix)
